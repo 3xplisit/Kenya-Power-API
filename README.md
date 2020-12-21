@@ -113,7 +113,7 @@ $ns                = $xml->getNamespaces(true);
 $soap              = $xml->children($ns['soapenv']);
 $response_Body     = $soap->children($ns['ns1']);
 ```
-<b>Response gotten from a Successful SoapClient call to the webservice call to KPLC
+<b>Response gotten from a Successful SoapClient call to the webservice call to KPLC</b>
     
     
 The Below response shows the request is a duplicate Transaction.
