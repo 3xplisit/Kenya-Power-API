@@ -64,6 +64,7 @@ For you to use the API and make requests to the Kenya Power API Gateway, you are
 
 
 //New instance of your Extended Soap Client class..
+```
 $soapClient = new MySoapClient("http://<path_to_your_soapserver/servewsdlkplc/PaymentRegisterServe.php?WSDL", $params);
 $PostTransaction = $soapClient->PaymentRegister($orderRequest);
 if($PostTransaction==''){
@@ -83,7 +84,7 @@ $xml = load_invalid_xml($data);
 $ns                = $xml->getNamespaces(true);          
 $soap              = $xml->children($ns['soapenv']);
 $response_Body     = $soap->children($ns['ns1']);
-
+```
 <b>Response gotten from a Successful SoapClient call to the webservice call to KPLC
     
     
