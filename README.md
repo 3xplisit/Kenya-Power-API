@@ -27,14 +27,233 @@ For you to use the API and make requests to the Kenya Power API Gateway, you are
 
  <h3> 2. Making Requests to the Payment Registration Endpoint.</h3>
  At this point the developer is required to take note of the following constants
-  PaymentCenterCode    = Supplied by KPLC
-  PaymentSubAgencyCode = 0
-  CheckNumber          = 0
-  RecordType           = C
-  Date Format          = Y-m-d\Th:i:s
+  <ol>
+    <li>PaymentCenterCode    = Supplied by KPLC </li>
+    <li>PaymentSubAgencyCode = 0 </li>
+    <li>CheckNumber          = 0 </li>
+    <li>RecordType           = C </li>
+    <li>Date Format          = Y-m-d\Th:i:s</li>
   
   SAMPLE PAYMENT REGISTRATION REQUEST 
+ ```
+ <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:inc='http://incms.indra.es/IncmsPayment/'>
+   <soapenv:Header/>
+   <soapenv:Body>
+      <inc:PaymentRegister>
+         <PaymentCenterCode>0075</PaymentCenterCode>
+         <PaymentSubAgencyCode>0</PaymentSubAgencyCode>
+         <ReferenceNumber>$accountno</ReferenceNumber>
+         <PaymentDate>$date</PaymentDate>
+         <PaymentAmount>$amount</PaymentAmount>
+         <CheckNumber>0</CheckNumber>
+         <AuxData>$payment_ref</AuxData>
+         <PaymentEmail>0</PaymentEmail>
+         <RecordType>C</RecordType>
+         <ExternalData>$msisdn</ExternalData>
+         <ListData>
+            <Data>
+               <Code>Payment_type</Code>
+               <Value>$payment_type</Value>
+            </Data>
+         </ListData>
+      </inc:PaymentRegister>
+   </soapenv:Body>
+</soapenv:Envelope>
+```
+<b> Sending the Above request XML via SoapClient </b> <br>
 
+
+//New instance of your Extended Soap Client class..
+$soapClient = new MySoapClient("http://<path_to_your_soapserver/servewsdlkplc/PaymentRegisterServe.php?WSDL", $params);
+$PostTransaction = $soapClient->PaymentRegister($orderRequest);
+if($PostTransaction==''){
+
+  echo 'No Response From Host..Please Check with your Admin';
+  exit;
+}
+
+//Store the data on an XML file to be used to read later
+file_put_contents('data.xml', $PostTransaction); //capture the response from Kenya Power in a file then use it to parse 
+
+$data = file_get_contents('data.xml');
+
+//load the stored XML
+$xml = load_invalid_xml($data);
+
+$ns                = $xml->getNamespaces(true);          
+$soap              = $xml->children($ns['soapenv']);
+$response_Body     = $soap->children($ns['ns1']);
+
+<b>Response gotten from a Successful SoapClient call to the webservice call to KPLC
+    
+    
+The Below response shows the request is a duplicate Transaction.
+
+```
+<?xml version='1.0' encoding='utf-8'?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:inc="http://incms.indra.es/IncmsPayment/">
+	<soapenv:Body>
+		<ns1:RegistryPaymentResponse xmlns:ns1="http://incms.indra.es/IncmsPayment/">
+			<ns1:code>-1</ns1:code>
+			<ns1:message>Error registering payment</ns1:message>
+			<ns1:description>Duplicated payment</ns1:description>
+			<ns1:system>INCMS</ns1:system>
+			<ns1:transactionId>12300989</ns1:transactionId>
+			<ns1:aux>S10400-54504761312</ns1:aux>
+			<ns1:accountNumber>41307543</ns1:accountNumber>
+			<ns1:amount>2000</ns1:amount>
+			<ns1:paymentDate>2018-11-27 11:10:13.0</ns1:paymentDate>
+		</ns1:RegistryPaymentResponse>
+	</soapenv:Body>
+</soapenv:Envelope>
+```
+
+<h2>Full Code</h2>
+
+```
+//Include the functions class below.
+include('classfunctions.php');
+
+try{
+//function that generates the token
+$token = GenerateToken();
+
+//pass headers to the web service call
+$httpheaders = array('http'=>array('protocol_version'=>1.1));
+$context = stream_context_create($httpheaders);
+$params = array('stream_context'=>$context,'trace'=>true,'exceptions'=>true,"stream_context" => stream_context_create(
+            array(
+                'ssl' => array(
+                    'verify_peer'       => false,
+                    'verify_peer_name'  => false,
+                ),'http' => [
+                   'header' => "Authorization: Bearer ".$token,
+    ],
+            )));
+
+
+/*-------------------------XML Request to Be Sent.--------------------------------
+
+Some values in the XML are constant eg
+PaymentCenterCode    = Supplied by KPLC
+PaymentSubAgencyCode = 0
+CheckNumber          = 0
+RecordType           = C
+date format should be Sent in the below format Y-m-d\Th:i:s
+
+---------------------------------------------------------------------------------*/
+//payment register sample request
+$orderRequest ="<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:inc='http://incms.indra.es/IncmsPayment/'>
+   <soapenv:Header/>
+   <soapenv:Body>
+      <inc:PaymentRegister>
+         <PaymentCenterCode>0075</PaymentCenterCode>
+         <PaymentSubAgencyCode>0</PaymentSubAgencyCode>
+         <ReferenceNumber>$accountno</ReferenceNumber>
+         <PaymentDate>$date</PaymentDate>
+         <PaymentAmount>$amount</PaymentAmount>
+         <CheckNumber>0</CheckNumber>
+         <AuxData>$payment_ref</AuxData>
+         <PaymentEmail>0</PaymentEmail>
+         <RecordType>C</RecordType>
+         <ExternalData>$cleanMSISDN</ExternalData>
+         <ListData>
+            <Data>
+               <Code>Payment_type</Code>
+               <Value>$payment_type</Value>
+            </Data>
+         </ListData>
+      </inc:PaymentRegister>
+   </soapenv:Body>
+</soapenv:Envelope>";
+
+//New instance of your Extended Soap Client class..
+$soapClient = new MySoapClient("http://<path_to_your_soapserver/servewsdlkplc/PaymentRegisterServe.php?WSDL", $params);
+$PostTransaction = $soapClient->PaymentRegister($orderRequest);
+if($PostTransaction==''){
+
+  echo 'No Response From Host..Please Check with your Admin';
+  exit;
+}
+
+//Store the data on an XML file to be used to read later
+file_put_contents('data.xml', $PostTransaction); //capture the response from Kenya Power in a file then use it to parse 
+
+$data = file_get_contents('data.xml');
+
+//load the stored XML
+$xml = load_invalid_xml($data);
+
+$ns                = $xml->getNamespaces(true);          
+$soap              = $xml->children($ns['soapenv']);
+$response_Body     = $soap->children($ns['ns1']);
+//Transaction ID Generated from KenyaPower
+
+$transactionID  = $response_Body->RegistryPaymentResponse->transactionId;
+
+/*---------------------------------------------------------------------
+
+      SUCCESSFULL TRANSACTIONS WILL BE VALIDATED HERE BEFORE DATABASE 
+
+-----------------------------------------------------------------------*/
+  if($response_Body->RegistryPaymentResponse->code =='0'){
+
+      //store the payment here on a database and do your logic here
+
+  }else{
+  
+/*-----------------------------------------------------------------------------------------
+
+DUPLICATED TRANSACTIONS WILL BE VALIDATED HERE AND DATABASE UPDATING WILL BE DONE HERE ALSO. 
+      
+-------------------------------------------------------------------------------------------*/
+    if($response_Body->RegistryPaymentResponse->description=='Duplicated payment' || $response_Body->RegistryPaymentResponse->message=='Error registering payment'){
+
+      //Duplicate Transactions. A duplicate transaction is one where the payment ref has been repeated..
+
+    }else{
+
+      if($response_Body->RegistryPaymentResponse->message=='Account number doesn´t exist' || $response_Body->RegistryPaymentResponse->description=='Please review the data provided'){
+
+      //Account Number doest exist here..
+    
+      }else{
+
+        if($response_Body->RegistryPaymentResponse->description=='The resource is not available'){
+
+      //Resource is unavailable.
+
+        }else{
+
+
+           /*----Aged transactions 3 months transactionscannot be captured in the system---*/
+
+          if($response_Body->RegistryPaymentResponse->description=='Payment was made more than 3 months ago'){
+
+
+      //Aged transactions. Those are payments whose date captured were more than 3 months ago
+          }else{
+
+            if($response_Body->RegistryPaymentResponse->message=="Payment date can not be greater than today's date"){
+
+      //Doesnt allow future dates..
+              
+            }
+
+          }
+          /*------------------------------------------------------------------------------------*/
+        }
+      }
+    }
+  }
+}catch(SoapFault $fault){
+
+//capture your soap faults here..
+$faultcode = $fault->faultcode;
+$errormsg = $fault->faultstring;
+
+}
+```
 
 
 
