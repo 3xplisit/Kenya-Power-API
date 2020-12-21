@@ -1,7 +1,8 @@
 # Kenya Power API
 This is an unofficial API Wrapper for Kenya Power Eazzy Pay Customers. Customers who seek to Integrate with kenya power for real time Payments via their Secure API.
-The API consists of 2 endpoints;
+The API consists of 3 endpoints;
 
+NB: <b> Please Note that to use this API your IP address needs to be whitelisted by Kenya Power to make all requests to the Below endpoints </b>
 1. Access Token Generation Endpoint. ( Endpoint to Generate Access Token <link> http://197.248.29.94:8281/token </link> )
 2. Payment Registration API Endpoint.( This Endpoint action is referrenced on the WSDL file and allows Developers to pass Payment information to register payment to Customers account) <link> https://197.248.29.94:8244/incmsPayments/2.0.1/ </link>
 3. Account Balance API Endpoint. ( This Endpoint action is referrenced on the WSDL file and accepts Account Number to Fetch Customers Account Balance Details) <link>https://197.248.29.94:8244/incmsAccountBalance/2.0.1</link>
