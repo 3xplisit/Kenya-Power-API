@@ -2,9 +2,38 @@
 This is an unofficial API Wrapper for Kenya Power Eazzy Pay Customers. Customers who seek to Integrate with kenya power for real time Payments via their Secure API.
 The API consists of 2 endpoints;
 
-1. Account Balance API Endpoint. ( Endpoint to Generate Access Token <link> http://197.248.29.94:8281/token </link> )
-2. Payment Registration API Endpoint.( Endpoint to Pass Payment Data via SoapClient <link> https://197.248.29.94:8244/incmsPayments/2.0.1/ </link>
+1. Access Token Generation Endpoint. ( Endpoint to Generate Access Token <link> http://197.248.29.94:8281/token </link> )
+2. Payment Registration API Endpoint.( This Endpoint action is referrenced on the WSDL file and allows Developers to pass Payment information to register payment to Customers account) <link> https://197.248.29.94:8244/incmsPayments/2.0.1/ </link>
+3. Account Balance API Endpoint. ( This Endpoint action is referrenced on the WSDL file and accepts Account Number to Fetch Customers Account Balance Details) <link>https://197.248.29.94:8244/incmsAccountBalance/2.0.1</link>
+# Setting Up Soap Server to serve the wsdl request to KPLC
+Sample Payment Register Soap Server. We will create a file called <b>PaymentRegisterServe.php</b> to handle our Payment Register Soap Server
 
+```
+/*
+
+WSDL Web Service Call: http://<you_server_name/IP Address>/PaymentRegisterServe.php?wsdl
+Endpoint Action: https://197.248.29.94:8244/incmsPayments/2.0.1
+
+*/
+try {
+ini_set("soap.wsdl_cache_enabled", "0"); // disabling WSDL cache
+
+//Load the wsdl file here.
+$server = new SoapServer("admin--IncmsPayment1.0.0.wsdl",array('soap_version'=>SOAP_1_2,'STYLE'=>SOAP_RPC,'use'=>SOAP_LITERAL));
+$server->addFunction("PaymentRegister");
+
+    $server->handle();
+    
+}
+catch (Exception $e) {
+
+    $server->fault('Sender', $e->getMessage());
+}
+```
+Your SoapServer URL will be as below. You will now need this inorder to pass the WebService Parameter Request to KPLC when calling your SoapClient Class.
+```
+https://<your_server_name/IP address>/PaymentRegisterServe.php?wsdl
+```
 # API FLow
 <h3> 1. Generating the Access Token </h3>
 For you to use the API and make requests to the Kenya Power API Gateway, you are provided with a Consumer Key and Consumer Secret to Generate and pass a Basic Auth Credentials to the request header to <b>Generate the Access Token</b> to be passed on all Requests to the below Endpoints and a username and password to pass as the body of the parameters as shown on the code snippet below.
@@ -62,9 +91,8 @@ For you to use the API and make requests to the Kenya Power API Gateway, you are
 ```
 <b> Sending the Above request XML via SoapClient </b> <br>
 
-
-//New instance of your Extended Soap Client class..
 ```
+//New instance of your Extended Soap Client class..
 $soapClient = new MySoapClient("http://<path_to_your_soapserver/servewsdlkplc/PaymentRegisterServe.php?WSDL", $params);
 $PostTransaction = $soapClient->PaymentRegister($orderRequest);
 if($PostTransaction==''){
