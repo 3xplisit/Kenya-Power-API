@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:inc="http://incms.indra.es/IncmsPayment/">
+	<soapenv:Body>
+		<ns1:RegistryPaymentResponse xmlns:ns1="http://incms.indra.es/IncmsPayment/">
+			<ns1:code>-1</ns1:code>
+			<ns1:message>Error registering payment</ns1:message>
+			<ns1:description>Duplicated payment</ns1:description>
+			<ns1:system>INCMS</ns1:system>
+			<ns1:transactionId>12300989</ns1:transactionId>
+			<ns1:aux>S10400-54504761312</ns1:aux>
+			<ns1:accountNumber>41307543</ns1:accountNumber>
+			<ns1:amount>2000</ns1:amount>
+			<ns1:paymentDate>2018-11-27 11:10:13.0</ns1:paymentDate>
+		</ns1:RegistryPaymentResponse>
+	</soapenv:Body>
+</soapenv:Envelope>

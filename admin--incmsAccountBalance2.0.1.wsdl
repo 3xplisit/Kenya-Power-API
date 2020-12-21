@@ -1,0 +1,79 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:tns="http://incms.indra.es/IncmsAccount/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://incms.indra.es/IncmsAccount/">
+  <wsdl:types>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://incms.indra.es/IncmsAccount/">
+         <xsd:element name="AccountBalance">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="Account" type="xsd:short"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element name="AccountBalanceResponse">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="code" type="xsd:int"/>
+                  <xsd:element name="message" type="xsd:string"/>
+                  <xsd:element name="AccountBalance"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="AccountBalanceResponse">
+    <wsdl:part name="parameters" element="tns:AccountBalanceResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="AccountBalanceRequest">
+    <wsdl:part name="parameters" element="tns:AccountBalance">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="InCmsAccountBalancePortType">
+    <wsdl:operation name="AccountBalance">
+      <wsdl:input message="tns:AccountBalanceRequest" wsaw:Action="http://incms.indra.es/IncmsAccount/AccountBalance">
+    </wsdl:input>
+      <wsdl:output message="tns:AccountBalanceResponse" wsaw:Action="http://incms.indra.es/IncmsAccount/IncmsAccount/AccountBalanceResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="InCmsAccountBalanceHttpBinding" type="tns:InCmsAccountBalancePortType">
+    <http:binding verb="POST"/>
+    <wsdl:operation name="AccountBalance">
+      <http:operation location="AccountBalance"/>
+      <wsdl:input>
+        <mime:content part="parameters" type="text/xml"/>
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="parameters" type="text/xml"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="InCmsAccountBalanceSoap11Binding" type="tns:InCmsAccountBalancePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="AccountBalance">
+      <soap:operation soapAction="http://incms.indra.es/IncmsAccount/AccountBalance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="InCmsAccountBalanceSoap12Binding" type="tns:InCmsAccountBalancePortType">
+    <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="AccountBalance">
+      <soap12:operation soapAction="http://incms.indra.es/IncmsAccount/AccountBalance" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="InCmsAccountBalance">
+    <wsdl:port name="InCmsAccountBalanceHttpEndpoint" binding="tns:InCmsAccountBalanceHttpBinding">
+      <http:address location="https://197.248.29.94:8244/incmsAccountBalance/2.0.1"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

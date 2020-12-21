@@ -1,0 +1,102 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://incms.indra.es/IncmsPayment/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://incms.indra.es/IncmsPayment/">
+  <wsdl:types>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://incms.indra.es/IncmsPayment/">
+         <xsd:element name="PaymentRegister">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="PaymentCenterCode" type="xsd:short"/>
+                  <xsd:element name="PaymentSubAgencyCode" type="xsd:byte"/>
+                  <xsd:element name="ReferenceNumber" type="xsd:string"/>
+                  <xsd:element name="PaymentDate" type="xsd:dateTime"/>
+                  <xsd:element name="PaymentAmount" type="xsd:float"/>
+                  <xsd:element name="CheckNumber" type="xsd:byte"/>
+                  <xsd:element name="AuxData" type="xsd:string"/>
+                  <xsd:element name="PaymentEmail" type="xsd:string"/>
+                  <xsd:element name="RecordType" type="xsd:string"/>
+                  <xsd:element name="ExternalData" type="xsd:int"/>
+                  <xsd:element name="ListData">
+                     <xsd:complexType>
+                        <xsd:sequence>
+                           <xsd:element name="Data">
+                              <xsd:complexType>
+                                 <xsd:sequence>
+                                    <xsd:element name="Code" type="xsd:string"/>
+                                    <xsd:element name="Value" type="xsd:string"/>
+                                 </xsd:sequence>
+                              </xsd:complexType>
+                           </xsd:element>
+                        </xsd:sequence>
+                     </xsd:complexType>
+                  </xsd:element>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element name="PaymentRegisterResponse">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="code" type="xsd:int"/>
+                  <xsd:element name="message" type="xsd:string"/>
+                  <xsd:element name="description" type="xsd:string"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="PaymentRegisterResponse">
+    <wsdl:part name="parameters" element="tns:PaymentRegisterResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentRegisterRequest">
+    <wsdl:part name="parameters" element="tns:PaymentRegister">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="IncmsPaymentsPortType">
+    <wsdl:operation name="PaymentRegister">
+      <wsdl:input message="tns:PaymentRegisterRequest" wsaw:Action="http://incms.indra.es/IncmsPayment/PaymentRegister">
+    </wsdl:input>
+      <wsdl:output message="tns:PaymentRegisterResponse" wsaw:Action="http://incms.indra.es/IncmsPayment/IncmsPayment/PaymentRegisterResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="IncmsPaymentsSoap11Binding" type="tns:IncmsPaymentsPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="PaymentRegister">
+      <soap:operation soapAction="http://incms.indra.es/IncmsPayment/PaymentRegister" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="IncmsPaymentsSoap12Binding" type="tns:IncmsPaymentsPortType">
+    <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="PaymentRegister">
+      <soap12:operation soapAction="http://incms.indra.es/IncmsPayment/PaymentRegister" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="IncmsPaymentsHttpBinding" type="tns:IncmsPaymentsPortType">
+    <http:binding verb="POST"/>
+    <wsdl:operation name="PaymentRegister">
+      <http:operation location="PaymentRegister"/>
+      <wsdl:input>
+        <mime:content part="parameters" type="text/xml"/>
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="parameters" type="text/xml"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="IncmsPayments">
+    <wsdl:port name="IncmsPaymentsHttpSoap12Endpoint" binding="tns:IncmsPaymentsSoap12Binding">
+      <soap12:address location="https://197.248.29.94:8244/incmsPayments/2.0.1"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
